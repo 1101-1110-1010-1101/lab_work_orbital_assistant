@@ -1,5 +1,6 @@
 package ru.ifmo.prog.lab3;
 
+import com.google.gson.Gson;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,10 +16,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.util.LinkedList;
 
 public class LoginForm extends Application {
+
+    static final String filepath = "F:\\ITMO\\Projects\\Java\\Laba6_Server_new\\src\\main\\java\\resources\\users.json";
     @Override
     public void start(Stage primaryStage){
         Button connect = new Button();
@@ -27,8 +30,6 @@ public class LoginForm extends Application {
         register.setText("Registration");
         TextField login = new TextField();
         PasswordField pswrd = new PasswordField();
-        Label login_t = new Label("Login: ");
-        Label pswrd_t = new Label("Password: ");
 
         Label name = new Label();
         name.setText("Orbital Assistant");
@@ -36,82 +37,27 @@ public class LoginForm extends Application {
 
         final ImageView selectedImage = new ImageView();
 
-        /*  Variant 1
-
-        try {
-            Image image1 = new Image(new FileInputStream("F:\\ITMO\\Projects\\Java\\Laba6_Server_new\\src\\main\\java\\resources\\logo.jpg"));
-        selectedImage.setImage(image1);
-        selectedImage.setFitHeight(150);
-        selectedImage.setFitWidth(150);
-
-
-
         connect.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println(login.getText());
-                System.out.println(pswrd.getText());
+                if (login(login.getText(), pswrd.getText()))
+                    System.out.println("Success");
+                else System.out.println("Fail");
             }
         });
 
-        AnchorPane root = new AnchorPane();
-
-
-
-        root.getChildren().add(connect);
-        AnchorPane.setBottomAnchor(connect, 10.0);
-        AnchorPane.setLeftAnchor(connect, 10.0);
-
-        root.getChildren().add(register);
-        AnchorPane.setBottomAnchor(register, 10.0);
-        AnchorPane.setLeftAnchor(register, AnchorPane.getLeftAnchor(connect) + 70.0);
-
-        root.getChildren().add(name);
-        AnchorPane.setTopAnchor(name, 10.0);
-        AnchorPane.setLeftAnchor(name, 10.0);
-
-        root.getChildren().add(selectedImage);
-        AnchorPane.setRightAnchor(selectedImage, 0.0);
-        AnchorPane.setTopAnchor(selectedImage, 0.0);
-
-        root.getChildren().add(login_t);
-        AnchorPane.setTopAnchor(login_t, 100.0);
-        AnchorPane.setLeftAnchor(login_t, 25.0);
-
-        root.getChildren().add(pswrd_t);
-        AnchorPane.setTopAnchor(pswrd_t, 150.0);
-        AnchorPane.setLeftAnchor(pswrd_t, 7.0);
-
-        root.getChildren().add(login);
-        AnchorPane.setTopAnchor(login, 100.0);
-        AnchorPane.setLeftAnchor(login, 65.0);
-
-        root.getChildren().add(pswrd);
-        AnchorPane.setTopAnchor(pswrd, 150.0);
-        AnchorPane.setLeftAnchor(pswrd, 65.0);
-
-        Scene scene = new Scene(root, 250*1.61803398875, 250);
-
-        primaryStage.setTitle("OR_ASS 1.001 alpha");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-        } catch (FileNotFoundException f) {f.printStackTrace();}*/
-
-        // Variant 2
-
-        connect.setOnAction(new EventHandler<ActionEvent>() {
+        register.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                System.out.println(login.getText());
-                System.out.println(pswrd.getText());
+                register(login.getText(), pswrd.getText());
             }
         });
+
         try {
             Image image1 = new Image(new FileInputStream("F:\\ITMO\\Projects\\Java\\Laba6_Server_new\\src\\main\\java\\resources\\image.png"));
             selectedImage.setImage(image1);
             selectedImage.setFitHeight(360);
             selectedImage.setFitWidth(360);
-
 
             AnchorPane root = new AnchorPane();
 
@@ -157,5 +103,43 @@ public class LoginForm extends Application {
     }
     public static void main(String[] args) {
         launch(args);
+    }
+    public static void register(String login, String psw){
+        User u = new User(login, psw);
+        String json_string = new Gson().toJson(u);
+        for (User user: getUsers(filepath)) {
+            if (user.getLogin().equals(login) && user.getPswrd().equals(psw))
+                json_string = "";
+        }
+        try {
+            FileWriter fstream = new FileWriter(filepath, true);
+            fstream.append(json_string + "\n");
+            fstream.close();
+        } catch (IOException io) {
+            System.err.println("Ошибка ввода/вывода");
+        }
+    }
+    public static boolean login(String login, String psw){
+
+        for (User user: getUsers(filepath)){
+            if (user.getLogin().equals(login) && user.getPswrd().equals(psw))
+                return true;
+        }
+        return false;
+    }
+    public static LinkedList<User> getUsers(String filepath){
+        Gson json = new Gson();
+        LinkedList<User> users = new LinkedList<User>();
+        try{
+            FileInputStream fstream = new FileInputStream(filepath);
+            BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
+            String strLine;
+            while ((strLine = br.readLine()) != null){
+                users.add(json.fromJson(strLine, User.class));
+            }
+        }catch (IOException e){
+            System.out.println("Ошибка");
+        }
+       return users;
     }
 }

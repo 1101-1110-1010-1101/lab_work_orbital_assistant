@@ -1,18 +1,20 @@
 package ru.ifmo.prog.lab3;
 
-import java.util.LinkedList;
-import java.util.List;
 
 public class User {
     private String login;
-    private String pswrdHash;
-    private List<String> commands;
-    private int idVK;                   //For password changing
+    private String pswrd;
 
-    public User (String log, String pswrdHash, int idVK){
+    public User (String log, String pswrdHash){
         this.login = log;
-        this.pswrdHash = pswrdHash;
-        this.idVK = idVK;
-        this.commands = new LinkedList<>();
+        this.pswrd = pswrdHash;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public String getPswrd() {
+        return pswrd;
     }
 }
