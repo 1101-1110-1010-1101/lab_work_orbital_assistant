@@ -2,7 +2,7 @@
 # (As per https://intellij-support.jetbrains.com/hc/en-us/articles/206544839:
 #   "Share the project .ipr file and all the .iml module files, don't share the .iws file")
 *.iws
-
+/src/main/java/resources/users.json
 # Build files
 /out
 /build
