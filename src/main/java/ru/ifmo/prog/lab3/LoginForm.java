@@ -11,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -37,14 +38,7 @@ public class LoginForm extends Application {
 
         final ImageView selectedImage = new ImageView();
 
-        connect.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                if (login(login.getText(), pswrd.getText()))
-                    System.out.println("Success");
-                else System.out.println("Fail");
-            }
-        });
+
 
         register.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -55,6 +49,7 @@ public class LoginForm extends Application {
 
         try {
             Image image1 = new Image(new FileInputStream("F:\\ITMO\\Projects\\Java\\Laba6_Server_new\\src\\main\\java\\resources\\image.png"));
+            Image image2 = new Image(new FileInputStream("F:\\ITMO\\Projects\\Java\\Laba6_Server_new\\src\\main\\java\\resources\\logo.jpg"));
             selectedImage.setImage(image1);
             selectedImage.setFitHeight(360);
             selectedImage.setFitWidth(360);
@@ -92,12 +87,73 @@ public class LoginForm extends Application {
             AnchorPane.setTopAnchor(pswrd, 295.0);
             AnchorPane.setRightAnchor(pswrd, 10.0);
 
-            Scene scene = new Scene(root, 350, 350);
-            primaryStage.setTitle("OR_ASS 1.001 alpha");
-            primaryStage.setScene(scene);
+            Button roundButton = new Button();
+
+            roundButton.setStyle(
+                    "-fx-background-radius: 50em; " +
+                            "-fx-min-width: 20px; " +
+                            "-fx-min-height: 20px; " +
+                            "-fx-max-width: 20px; " +
+                            "-fx-max-height: 20px;" +
+                            "-fx-background-color: White"
+            );
+            root.getChildren().add(roundButton);
+            AnchorPane.setBottomAnchor(roundButton, 5.0);
+            AnchorPane.setLeftAnchor(roundButton, 5.0);
+
+
+
+            Scene login_form = new Scene(root, 350, 350);
+            primaryStage.setTitle("OR_ASS 1.001 alpha(server) LOGIN");
+            primaryStage.setScene(login_form);
             primaryStage.setFullScreen(false);
             primaryStage.setResizable(false);
             primaryStage.show();
+
+            connect.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event){
+                    if (login(login.getText(), pswrd.getText())) {
+                        System.out.println("Success");
+                        root.getChildren().clear();
+                        primaryStage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+                        primaryStage.setFullScreen(true);
+                    }
+                    else System.out.println("Fail");
+                }
+            });
+
+            roundButton.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event){
+                    if (selectedImage.getImage() == image1) { // Станет белым
+                        selectedImage.setImage(image2);
+                        roundButton.setStyle(
+                                "-fx-background-radius: 50em; " +
+                                        "-fx-min-width: 20px; " +
+                                        "-fx-min-height: 20px; " +
+                                        "-fx-max-width: 20px; " +
+                                        "-fx-max-height: 20px;" +
+                                        "-fx-background-color: Black"
+                        );
+                        name.setTextFill(Color.BLACK);
+                        name1.setTextFill(Color.BLACK);
+                    }
+                    else {
+                        selectedImage.setImage(image1); // FIXME image size
+                        roundButton.setStyle(
+                                "-fx-background-radius: 50em; " +
+                                        "-fx-min-width: 20px; " +
+                                        "-fx-min-height: 20px; " +
+                                        "-fx-max-width: 20px; " +
+                                        "-fx-max-height: 20px;" +
+                                        "-fx-background-color: WHITE"
+                        );
+                        name.setTextFill(Color.WHITE);
+                        name1.setTextFill(Color.WHITE);
+                    }
+                }
+            });
         } catch (FileNotFoundException f) {f.printStackTrace();}
 
     }
